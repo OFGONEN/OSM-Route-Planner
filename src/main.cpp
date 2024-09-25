@@ -9,6 +9,9 @@
 #include "route_planner.h"
 
 using namespace std::experimental;
+using namespace std;
+
+void takeValidInput(float& value, const string& inputMessage);
 
 static std::optional<std::vector<std::byte>> ReadFile(const std::string &path)
 {   
@@ -56,12 +59,24 @@ int main(int argc, const char **argv)
     // TODO 1: Declare floats `start_x`, `start_y`, `end_x`, and `end_y` and get
     // user input for these values using std::cin. Pass the user input to the
     // RoutePlanner object below in place of 10, 10, 90, 90.
-
+	float start_x = 0;
+	float start_y = 0;
+	float end_x = 0;
+	float end_y = 0;
+	
+	takeValidInput(start_x, "Provide Input for Start-X: ");
+	takeValidInput(start_y, "Provide Input for Start-Y: ");
+	takeValidInput(end_x, "Provide Input for End-X: ");
+	takeValidInput(end_y, "Provide Input for End-Y: ");
+	
+	cout << "Start Coordinate: " << start_x << " - " << start_y << endl << "End Coordinate: " << end_x << " - " << end_y << endl;
+  
     // Build Model.
     RouteModel model{osm_data};
 
     // Create RoutePlanner object and perform A* search.
-    RoutePlanner route_planner{model, 10, 10, 90, 90};
+    RoutePlanner route_planner{model, start_x, start_y, end_x, end_y};
+	//RoutePlanner route_planner{model, 10, 10, 90, 90};
     route_planner.AStarSearch();
 
     std::cout << "Distance: " << route_planner.GetDistance() << " meters. \n";
@@ -77,4 +92,16 @@ int main(int argc, const char **argv)
         render.Display(surface);
     });
     display.begin_show();
+}
+
+void takeValidInput(float& value, const string& inputMessage){
+	cout << inputMessage;
+	while(!(cin >> value)){
+		//Clearing cin after bad input
+		//https://stackoverflow.com/a/28533608
+		cin.clear();
+		cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		cout << "Invalid Input, Try Again!" << endl;
+      	cout << inputMessage;
+	}
 }
